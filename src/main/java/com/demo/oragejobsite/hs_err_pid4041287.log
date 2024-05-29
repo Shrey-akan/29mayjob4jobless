@@ -1,0 +1,91 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 113246208 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Unscaled Compressed Oops mode in which the Java heap is
+#     placed in the first 4GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 4GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2779), pid=4041287, tid=4041294
+#
+# JRE version: OpenJDK Runtime Environment (Red_Hat-17.0.6.0.9-0.3.ea.el8) (17.0.6+9) (build 17.0.6-ea+9-LTS)
+# Java VM: OpenJDK 64-Bit Server VM (Red_Hat-17.0.6.0.9-0.3.ea.el8) (17.0.6-ea+9-LTS, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e" (or dumping to /root/folder_name/job4joblessbackend/src/main/java/com/demo/oragejobsite/core.4041287)
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: /root/folder_name/job4joblessbackend/target/oragejobsite-0.0.1-SNAPSHOT.jar
+
+Host: DO-Regular, 2 cores, 3G, CentOS Stream release 8
+Time: Mon Mar  4 05:22:11 2024 UTC elapsed time: 147572.706025 seconds (1d 16h 59m 32s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007fda400c0a70):  VMThread "VM Thread" [stack: 0x00007fda2867e000,0x00007fda2877e000] [id=4041294]
+
+Stack: [0x00007fda2867e000,0x00007fda2877e000],  sp=0x00007fda2877bcd0,  free space=1015k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0xf783b6]  VMError::report_and_die(int, char const*, char const*, __va_list_tag*, Thread*, unsigned char*, void*, void*, char const*, int, unsigned long)+0x1a6
+V  [libjvm.so+0xf790bf]  VMError::report_and_die(Thread*, char const*, int, unsigned long, VMErrorType, char const*, __va_list_tag*)+0x2f
+V  [libjvm.so+0x62060a]  report_vm_out_of_memory(char const*, int, unsigned long, VMErrorType, char const*, ...)+0xda
+
+[timeout occurred during error reporting in step "printing native stack"] after 32 s.
+VM_Operation (0x00007fd9f4df7370): G1CollectForAllocation, mode: safepoint, requested by thread 0x00007fda1408e070
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007fda140a8d80, length=36, elements={
+0x00007fda400c49f0, 0x00007fda400c5dd0, 0x00007fda400caee0, 0x00007fda400cc290,
+0x00007fda400cd6a0, 0x00007fda400cf050, 0x00007fda400d0580, 0x00007fda400d19f0,
+0x00007fda400f10c0, 0x00007fda400f4580, 0x00007fda40bdd6b0, 0x00007fda40bde970,
+0x00007fda40959b00, 0x00007fda406c4600, 0x00007fda1408e070, 0x00007fda1408f340,
+0x00007fda1409c910, 0x00007fda140a16b0, 
+[timeout occurred during error reporting in step "printing all threads"] after 33 s.
+VM state: at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007fda40022010] Threads_lock - owner thread: 0x00007fda400c0a70
+[0x00007fda400227c0] Heap_lock - owner thread: 0x00007fda1408e070
+
+Heap address: 0x00000000c6e00000, size: 914 MB, Compressed Oops mode: 32-bit
+
+CDS archive(s) mapped at: [0x0000000800000000-0x0000000800be4000-0x0000000800be4000), size 12468224, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 0.
+Compressed class space mapped at: 0x0000000800c00000-0x0000000840c00000, reserved size: 1073741824
+Narrow klass base: 0x0000000800000000, Narrow klass shift: 0, Narrow klass range: 0x100000000
+
+GC Precious Log:
+ CPUs: 2 total, 2 available
+ Memory: 3653M
+ Large Page Support: Disabled
+ NUMA Support: Disabled
+ Compressed Oops: Enabled (32-bit)
+ Heap Region Size: 1M
+ Heap Min Capacity: 8M
+ Heap Initial Capacity: 58M
+ Heap Max Capacity: 914M
+ Pre-touch: Disabled
+ Parallel Workers: 2
+ Concurrent Workers: 1
+ Concurrent Refinement Workers: 2
+ Periodic GC: Disabled
+
+Heap:
+ garbage-first heap   total 73728K, used 25771K [0x00000000c6e00000, 0x0000000100000000)
+  region size 1024K, 1 young (1024K), 1 survivors (1024K)
+ Metaspace       used 50201K, committed 50688K, reserved 1097728K
+
