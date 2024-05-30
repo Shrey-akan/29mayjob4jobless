@@ -100,7 +100,29 @@ public ResponseEntity<Object> insertEmployer(@RequestBody Employer emp) {
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request");
    }
 }
-
+@CrossOrigin(origins = "${myapp.url}")
+@GetMapping("/fetchemployerName")
+public ResponseEntity<List<Employer>> fetchemployerName(@RequestParam(required = false) String empid) {
+    try {
+        List<Employer> employers;
+        if (empid != null) {
+            // If UID is provided, fetch only the employer with the specified UID
+            Optional<Employer> employer = ed.findByEmpid(empid);
+            employers = new ArrayList<>();
+            employer.ifPresent(employers::add);
+        } else {
+            // If UID is not provided, fetch all employers
+            employers = ed.findAll();
+        }
+        if (employers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(employers);
+        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 
 //@CrossOrigin(origins = "${myapp.url}")
 //@GetMapping("/fetchemployer")
