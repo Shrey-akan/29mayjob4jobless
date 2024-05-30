@@ -90,71 +90,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
         return applicantsCountRepository.findByJobid(jobid);
     }
 	
-	
-//	@CrossOrigin(origins = "${myapp.url}")
-//	@GetMapping("/fetchapplyform")
-//	public ResponseEntity<?> fetchapplyform(@RequestParam(required = false) String uid,
-//			@RequestParam(required = false) String empid,
-//			@RequestParam(defaultValue = "0") int page,
-//	        @RequestParam(defaultValue = "5") int size) {
-//	    try {
-//	        List<ApplyJob> applyJobs;
-//
-//	        if (uid != null && !uid.isEmpty()) {
-//	            applyJobs = apd.findByUid(uid);
-//	        } else {
-//	            applyJobs = apd.findAll();
-//	        }
-//	        return ResponseEntity.ok(applyJobs);
-//	    } catch (DataAccessException e) {
-//	        e.printStackTrace();
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body("Database error occurred: " + e.getMessage());
-//	    } catch (Exception e) {
-//	        e.printStackTrace();
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body("An error occurred while processing your request: " + e.getMessage());
-//	    }
-//	}
-    
-//    @CrossOrigin(origins = "${myapp.url}")
-//    @GetMapping("/fetchapplyform")
-//    public ResponseEntity<?> fetchapplyform(
-//            @RequestParam(required = false) String uid,
-//            @RequestParam(required = false) String empid,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "3") int size,
-//            @RequestParam(required = false) String jobTitle) {
-//    	
-//        try {
-//            Pageable pageable = PageRequest.of(page, size);
-//            Page<ApplyJob> applyJobsPage;
-//
-//            if (uid != null && !uid.isEmpty()) {
-//                applyJobsPage = apd.findByUid(uid, pageable);
-//            } else if (empid != null && !empid.isEmpty()) {
-//                applyJobsPage = apd.findByEmpid(empid, pageable);
-//            } else {
-//                applyJobsPage = apd.findAll(pageable);
-//            }
-//
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("jobPosts", applyJobsPage.getContent());
-//            response.put("currentPage", applyJobsPage.getNumber());
-//            response.put("totalItems", applyJobsPage.getTotalElements());
-//            response.put("totalPages", applyJobsPage.getTotalPages());
-//
-//            return ResponseEntity.ok(response);
-//        } catch (DataAccessException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Database error occurred: " + e.getMessage());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("An error occurred while processing your request: " + e.getMessage());
-//        }
-//    }
+
     @CrossOrigin(origins = "${myapp.url}")
     @GetMapping("/fetchapplyform")
     public ResponseEntity<?> fetchapplyform(

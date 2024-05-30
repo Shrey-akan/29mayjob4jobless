@@ -110,17 +110,17 @@ public class PostjobController {
 	  	        @RequestParam(required = false) String searchLocation,
 	  	        @RequestParam(required = false) String searchCompany) {
 	  	    try {
-	  	    	int pageSize = (empid!=null && !empid.isEmpty())?2:5; 
+	  	        int pageSize = (empid != null && !empid.isEmpty()) ? 2 : 5;
 	  	        Pageable pageable = PageRequest.of(page, pageSize);
 	  	        String jobTitleRegex = searchJobTitle != null ? ".*" + Pattern.quote(searchJobTitle.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
 	  	        String locationRegex = searchLocation != null ? ".*" + Pattern.quote(searchLocation.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
-	  	        String companyRegex = searchCompany !=null ? ".*" + Pattern.quote(searchCompany.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
+	  	        String companyRegex = searchCompany != null ? ".*" + Pattern.quote(searchCompany.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
 
 	  	        Page<PostJob> jobPage;
 	  	        if (empid != null && !empid.isEmpty()) {
-	  	            jobPage = pjd.findByEmpidAndApprovejobAndJobTitleAndLocationAndCompany(empid, true, jobTitleRegex, locationRegex,companyRegex, pageable);
+	  	            jobPage = pjd.findByEmpidAndApprovejobAndJobTitleAndLocationAndCompany(empid, true, jobTitleRegex, locationRegex, companyRegex, pageable);
 	  	        } else {
-	  	            jobPage = pjd.findByApprovejobAndJobTitleAndLocationAndCompany(true,jobTitleRegex, locationRegex,companyRegex, pageable);
+	  	            jobPage = pjd.findByApprovejobAndJobTitleAndLocationAndCompany(true, jobTitleRegex, locationRegex, companyRegex, pageable);
 	  	        }
 
 	  	        List<Map<String, Object>> jobPostsWithStatus = jobPage.stream().map(postJob -> {
@@ -141,14 +141,35 @@ public class PostjobController {
 	  	            jobPostMap.put("approvejob", postJob.isApprovejob());
 	  	            jobPostMap.put("experience", postJob.getExperience());
 
+	  	            LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	  	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	  	            String formattedSendTime = sendTime.format(formatter);
+	  	            jobPostMap.put("sendTime", formattedSendTime);
+
 	  	            return jobPostMap;
 	  	        }).collect(Collectors.toList());
+
+	  	        // Fetching all job posts based on empid and approvejob status
+	  	        List<PostJob> jobPosts;
+	  	        if (empid != null && !empid.isEmpty()) {
+	  	            jobPosts = pjd.findByEmpidAndApprovejob(empid, true, pageable).getContent();
+	  	        } else {
+	  	            jobPosts = pjd.findByApprovejob(true, pageable).getContent();
+	  	        }
+	  	        System.out.println("hello" + jobPosts);
+
+	  	        // Update each job post with the applicants count
+	  	        for (PostJob jobPost : jobPosts) {
+	  	            int applicantsCount = getApplicantsCount(jobPost.getJobid(), empid);
+	  	            jobPost.setApplicants(applicantsCount);
+	  	        }
 
 	  	        Map<String, Object> response = new HashMap<>();
 	  	        response.put("jobPosts", jobPostsWithStatus);
 	  	        response.put("currentPage", page);
 	  	        response.put("totalItems", jobPage.getTotalElements());
 	  	        response.put("totalPages", jobPage.getTotalPages());
+	  	        response.put("allJobPosts", jobPosts);
 
 	  	        return ResponseEntity.ok(response);
 	  	    } catch (Exception e) {
@@ -157,27 +178,8 @@ public class PostjobController {
 	  	    }
 	  	}
 
-	  
-	  
-//	  @CrossOrigin(origins = "${myapp.url}")
-//	  @GetMapping("/fetchjobpostadmin")
-//	  public ResponseEntity<List<PostJob>> fetchjobpostadmin(
-//			  @RequestParam(required = false) String empid) {
-//	      try {
-//	          
-//	    	  List<PostJob> jobPosts = pjd.findAll();
-//	          
-//	          for (PostJob jobPost : jobPosts) {
-//	              int applicantsCount = getApplicantsCount(jobPost.getJobid(), empid);
-//	              jobPost.setApplicants(applicantsCount);
-//	          }
-//
-//	          return ResponseEntity.ok(jobPosts);
-//	      } catch (Exception e) {
-//	          e.printStackTrace();
-//	          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//	      }
-//	  }
+
+
 	    @CrossOrigin(origins = "${myapp.url}")
 		  @GetMapping("/fetchjobpostadmin")
 		  public ResponseEntity<?> fetchjobpostadmin(
@@ -212,37 +214,7 @@ public class PostjobController {
 		      }
 		  }
 	  
-//	  @CrossOrigin(origins = "${myapp.url}")
-//	  @GetMapping("/fetchdisapprovejobpost")
-//	    public ResponseEntity<List<PostJob>> fetchDisapprovejobpostadmin(@RequestParam(required = false) String empid) {
-//	        try {
-//	            List<PostJob> jobPosts;
-//	            
-//	            if (empid != null && !empid.isEmpty()) {
-//	                // Filter job posts based on empid
-//	                jobPosts = pjd.findByEmpid(empid);
-//	            } else {
-//	                // If empid is not provided, fetch all job posts
-//	                jobPosts = pjd.findAll();
-//	            }
-//
-//	            // Filter out job posts where approve is true
-//	            jobPosts = jobPosts.stream()
-//	                               .filter(jobPost -> !jobPost.isApprovejob())
-//	                               .collect(Collectors.toList());
-//
-//	            // Calculate applicants count for each job post
-//	            for (PostJob jobPost : jobPosts) {
-//	                int applicantsCount = getApplicantsCount(jobPost.getJobid(), empid);
-//	                jobPost.setApplicants(applicantsCount);
-//	            }
-//
-//	            return ResponseEntity.ok(jobPosts);
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//	        }
-//	    }
+
 	  @CrossOrigin(origins = "${myapp.url}")
 	  @GetMapping("/fetchdisapprovejobpost")
 	  public ResponseEntity<Map<String, Object>> fetchDisapprovejobpostadmin(
@@ -294,44 +266,7 @@ public class PostjobController {
 	          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	      }
 	  }
-//
-//	  @CrossOrigin(origins = "${myapp.url}")
-//	  @GetMapping("/fetchdisapprovejobpost")
-//	    public ResponseEntity<List<PostJob>> fetchDisapprovejobpostadmin(@RequestParam(required = false) String empid, @RequestParam(defaultValue = "0") int page) {
-//		  try {
-//		        List<PostJob> jobPosts;
-//		        
-//		        if (empid != null && !empid.isEmpty()) {
-////		            Pageable pageable = PageRequest.of(page, limit);
-//		        	Pageable pageable = PageRequest.of(page, 2);
-//		        	Page<PostJob> jobPage = pjd.findByEmpid(empid,true, pageable);
-//		            jobPosts = jobPage.getContent();
-//		            	
-//		            
-//		        } else {
-////		        	jobPosts = pjd.findAll();
-////		            Pageable pageable = PageRequest.of(page, limit);
-//		        	Pageable pageable = PageRequest.of(page, 5);
-//		            Page<PostJob> jobPage = pjd.findAllWithoutEmpid(true,pageable);
-//		            jobPosts = jobPage.getContent();
-//		        }
-//
-//		        jobPosts = jobPosts.stream()
-//                        .filter(jobPost -> !jobPost.isApprovejob())
-//                        .collect(Collectors.toList());
-//		        
-//
-//		        for (PostJob jobPost : jobPosts) {
-//		            int applicantsCount = getApplicantsCount(jobPost.getJobid(), empid);
-//		            jobPost.setApplicants(applicantsCount);
-//		        }
-//
-//		        return ResponseEntity.ok(jobPosts);
-//		    } catch (Exception e) {
-//		        e.printStackTrace();
-//		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//		    }
-//	  }
+
 
 
 	    // Helper method to fetch the count of applicants based on jobid and empid
@@ -346,90 +281,9 @@ public class PostjobController {
 	        }
 	    }	
 	
-//	    @GetMapping("/fetchjobpoststatus")
-//	    public ResponseEntity<Map<String, Object>> fetchjobpoststatus(
-//	            @RequestParam(required = false) String uid,
-//	            @RequestParam(defaultValue = "0") int page,
-//	            @RequestParam(defaultValue = "5") int size,
-//	            @RequestParam(required = false) String searchJobTitle,
-//	            @RequestParam(required = false) String searchLocation) {
-//	        try {
-//	            List<Map<String, Object>> jobPostsWithStatus = new ArrayList<>();
-//	            List<PostJob> allJobPosts = pjd.findAll();
-//	            
-//	            List<PostJob> filteredJobPosts = allJobPosts.stream()
-//	                    .filter(postJob -> !postJob.isArchive() && postJob.isApprovejob())
-//	                    .collect(Collectors.toList());
-//	            
-//	            if (searchJobTitle != null && !searchJobTitle.isEmpty()) {
-//	                String searchTitleLower = searchJobTitle.toLowerCase(Locale.ENGLISH);
-//	                String regexPattern = "\\b" + Pattern.quote(searchTitleLower) + "\\b";
-//	                Pattern pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
-//
-//	                filteredJobPosts = filteredJobPosts.stream()
-//	                    .filter(postJob -> pattern.matcher(postJob.getJobtitle().toLowerCase(Locale.ENGLISH)).find())
-//	                    .collect(Collectors.toList());
-//	            }
-//
-//	            
-//	            if (searchLocation != null && !searchLocation.isEmpty()) {
-//	                filteredJobPosts = filteredJobPosts.stream()
-//	                        .filter(postJob -> postJob.getLocationjob().contains(searchLocation))
-//	                        .collect(Collectors.toList());
-//	            }
-//	            
-//	            int start = page * size;
-//	            int end = Math.min(start + size, filteredJobPosts.size());
-//	            if (start > end) {
-//	                return ResponseEntity.badRequest().body(null);
-//	            }
-//	            
-//	            List<PostJob> paginatedJobPosts = filteredJobPosts.subList(start, end);
-//	            
-//	            for (PostJob postJob : paginatedJobPosts) {
-//	                Map<String, Object> jobPostMap = new HashMap<>();
-//	                jobPostMap.put("jobid", postJob.getJobid());
-//	                jobPostMap.put("empName", postJob.getEmpName());
-//	                jobPostMap.put("empEmail", postJob.getEmpEmail());
-//	                jobPostMap.put("jobtitle", postJob.getJobtitle());
-//	                jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
-//	                jobPostMap.put("numberofopening", postJob.getNumberofopening());
-//	                jobPostMap.put("locationjob", postJob.getLocationjob());
-//	                jobPostMap.put("jobtype", postJob.getJobtype());
-//	                jobPostMap.put("schedulejob", postJob.getSchedulejob());
-//	                jobPostMap.put("payjob", postJob.getPayjob());
-//	                jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
-//	                jobPostMap.put("empid", postJob.getEmpid());
-//	                jobPostMap.put("archive", postJob.isArchive());
-//	                jobPostMap.put("approvejob", postJob.isApprovejob());
-//	                jobPostMap.put("experience", postJob.getExperience());
-//
-//	                LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//	                String formattedSendTime = sendTime.format(formatter);
-//	                jobPostMap.put("sendTime", formattedSendTime);
-//
-//	                if (uid != null) {
-//	                    SavedJob savedJob = savedJobServiceimpl.findByJobidAndUid(postJob.getJobid(), uid);
-//	                    boolean saveStatus = (savedJob != null) && savedJob.getSaveStatus();
-//	                    jobPostMap.put("saveStatus", saveStatus);
-//	                }
-//
-//	                jobPostsWithStatus.add(jobPostMap);
-//	            }
-//	            
-//	            Map<String, Object> response = new HashMap<>();
-//	            response.put("jobPosts", jobPostsWithStatus);
-//	            response.put("currentPage", page);
-//	            response.put("totalItems", filteredJobPosts.size());
-//	            response.put("totalPages", (int) Math.ceil((double) filteredJobPosts.size() / size));
-//	            
-//	            return ResponseEntity.ok(response);
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//	        }
-//	    }
+
+	    
+	    
 	    @GetMapping("/fetchjobpoststatus")
 	    public ResponseEntity<Map<String, Object>> fetchjobpoststatus(
 	            @RequestParam(required = false) String uid,
@@ -442,35 +296,41 @@ public class PostjobController {
 	            String jobTitleRegex = searchJobTitle != null ? ".*" + Pattern.quote(searchJobTitle.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
 	            String locationRegex = searchLocation != null ? ".*" + Pattern.quote(searchLocation) + ".*" : ".*";
 
-	            Page<PostJob> jobPage = pjd.findByJobTitleAndLocation(jobTitleRegex,locationRegex, pageable);
+	            Page<PostJob> jobPage = pjd.findByJobTitleAndLocation(jobTitleRegex, locationRegex, pageable);
 
-	            List<Map<String, Object>> jobPostsWithStatus = jobPage.stream().map(postJob -> {
-	                Map<String, Object> jobPostMap = new HashMap<>();
-	                jobPostMap.put("jobid", postJob.getJobid());
-	                jobPostMap.put("empName", postJob.getEmpName());
-	                jobPostMap.put("empEmail", postJob.getEmpEmail());
-	                jobPostMap.put("jobtitle", postJob.getJobtitle());
-	                jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
-	                jobPostMap.put("numberofopening", postJob.getNumberofopening());
-	                jobPostMap.put("locationjob", postJob.getLocationjob());
-	                jobPostMap.put("jobtype", postJob.getJobtype());
-	                jobPostMap.put("schedulejob", postJob.getSchedulejob());
-	                jobPostMap.put("payjob", postJob.getPayjob());
-	                jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
-	                jobPostMap.put("empid", postJob.getEmpid());
-	                jobPostMap.put("archive", postJob.isArchive());
-	                jobPostMap.put("approvejob", postJob.isApprovejob());
-	                jobPostMap.put("experience", postJob.getExperience());
+	            List<Map<String, Object>> jobPostsWithStatus = jobPage.stream()
+	                .filter(postJob -> !postJob.isArchive() && postJob.isApprovejob())
+	                .map(postJob -> {
+	                    Map<String, Object> jobPostMap = new HashMap<>();
+	                    jobPostMap.put("jobid", postJob.getJobid());
+	                    jobPostMap.put("empName", postJob.getEmpName());
+	                    jobPostMap.put("empEmail", postJob.getEmpEmail());
+	                    jobPostMap.put("jobtitle", postJob.getJobtitle());
+	                    jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
+	                    jobPostMap.put("numberofopening", postJob.getNumberofopening());
+	                    jobPostMap.put("locationjob", postJob.getLocationjob());
+	                    jobPostMap.put("jobtype", postJob.getJobtype());
+	                    jobPostMap.put("schedulejob", postJob.getSchedulejob());
+	                    jobPostMap.put("payjob", postJob.getPayjob());
+	                    jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
+	                    jobPostMap.put("empid", postJob.getEmpid());
+	                    jobPostMap.put("archive", postJob.isArchive());
+	                    jobPostMap.put("approvejob", postJob.isApprovejob());
+	                    jobPostMap.put("experience", postJob.getExperience());
 
+	                    LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	                    String formattedSendTime = sendTime.format(formatter);
+	                    jobPostMap.put("sendTime", formattedSendTime);
 
-	                if (uid != null) {
-	                    SavedJob savedJob = savedJobServiceimpl.findByJobidAndUid(postJob.getJobid(), uid);
-	                    boolean saveStatus = (savedJob != null) && savedJob.getSaveStatus();
-	                    jobPostMap.put("saveStatus", saveStatus);
-	                }
+	                    if (uid != null) {
+	                        SavedJob savedJob = savedJobServiceimpl.findByJobidAndUid(postJob.getJobid(), uid);
+	                        boolean saveStatus = (savedJob != null) && savedJob.getSaveStatus();
+	                        jobPostMap.put("saveStatus", saveStatus);
+	                    }
 
-	                return jobPostMap;
-	            }).collect(Collectors.toList());
+	                    return jobPostMap;
+	                }).collect(Collectors.toList());
 
 	            Map<String, Object> response = new HashMap<>();
 	            response.put("jobPosts", jobPostsWithStatus);
@@ -484,85 +344,20 @@ public class PostjobController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
 	    }
-//	    @GetMapping("/fetchjobpoststatuscheck")
-//	    public ResponseEntity<List<Map<String, Object>>> fetchjobpoststatuscheck(@RequestParam(required = false) String uid) {
-//	        try {
-//	            List<Map<String, Object>> jobPostsWithStatus = new ArrayList<>();
-//	            List<PostJob> allJobPosts = pjd.findAll();
-//
-//
-//	            for (PostJob postJob : allJobPosts) {
-//	                if (postJob.isArchive() || !postJob.isApprovejob()) {
-//	                    continue;
-//	                }
-//	                
-//	                if (uid != null) {
-//	                    SavedJob savedJob = savedJobServiceimpl.findByJobidAndUid(postJob.getJobid(), uid);
-//	                    boolean saveStatus = (savedJob != null) && savedJob.getSaveStatus();
-//	                    if (!saveStatus) {
-//	                        continue; // Skip this job post if saveStatus is false
-//	                    }
-//	                }
-//
-//
-//	                Map<String, Object> jobPostMap = new HashMap<>();
-//	                jobPostMap.put("jobid", postJob.getJobid());
-//	                jobPostMap.put("empName", postJob.getEmpName());
-//	                jobPostMap.put("empEmail", postJob.getEmpEmail());
-//	                jobPostMap.put("jobtitle", postJob.getJobtitle());
-//	                jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
-//	                jobPostMap.put("numberofopening", postJob.getNumberofopening());
-//	                jobPostMap.put("locationjob", postJob.getLocationjob());
-//	                jobPostMap.put("jobtype", postJob.getJobtype());
-//	                jobPostMap.put("schedulejob", postJob.getSchedulejob());
-//	                jobPostMap.put("payjob", postJob.getPayjob());
-//	                jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
-//	                jobPostMap.put("empid", postJob.getEmpid());
-//	                jobPostMap.put("archive", postJob.isArchive());
-//	                jobPostMap.put("approvejob", postJob.isApprovejob());
-//	                jobPostMap.put("experience", postJob.getExperience());
-//
-//
-//	                LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//	                String formattedSendTime = sendTime.format(formatter);
-//	                jobPostMap.put("sendTime", formattedSendTime);
-//
-//
-//	                if (uid != null) {
-//	                    jobPostMap.put("saveStatus", true); // Since we already filtered false saveStatus
-//	                }
-//
-//
-//	                jobPostsWithStatus.add(jobPostMap);
-//	            }
-//
-//
-//	            return ResponseEntity.ok(jobPostsWithStatus);
-//	        } catch (Exception e) { 
-//	            e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//	        }
-//	    }
+
+
 	    
 	    @GetMapping("/fetchjobpoststatuscheck")
 	    public ResponseEntity<Map<String, Object>> fetchjobpoststatuscheck(
-	    		@RequestParam(required = false) String uid,
-	    		@RequestParam(defaultValue = "0") int page,
+	            @RequestParam(required = false) String uid,
+	            @RequestParam(defaultValue = "0") int page,
 	            @RequestParam(defaultValue = "5") int size,
 	            @RequestParam(required = false) String jobTitle,
 	            @RequestParam(required = false) String jobLocation) {
 	        try {
-	        	Pageable pageable = PageRequest.of(page, size);
+	            Pageable pageable = PageRequest.of(page, size);
 	            Page<PostJob> applyJobsPage;
-	            
-//	            if (uid != null) {
-//	                List<SavedJob> savedJobs = savedJobServiceimpl.findByUidAndSaveStatusTrue(uid);
-//	                List<String> jobIds = savedJobs.stream().map(SavedJob::getJobid).collect(Collectors.toList());
-//	                applyJobsPage = pjd.findApprovedAndArchivedWithUserStatus(jobIds, pageable);
-//	            } else {
-//	                applyJobsPage = pjd.findByApprovejobTrueAndArchiveFalse(pageable);
-//	            }
+
 	            if (uid != null) {
 	                // Get jobIds saved by the user
 	                List<SavedJob> savedJobs = savedJobServiceimpl.findByUidAndSaveStatusTrue(uid);
@@ -577,8 +372,7 @@ public class PostjobController {
 	                } else {
 	                    applyJobsPage = pjd.findApprovedAndArchivedWithUserStatus(jobIds, pageable);
 	                }
-	            } 
-	            else {
+	            } else {
 	                if (jobTitle != null && jobLocation != null) {
 	                    applyJobsPage = pjd.findByApprovejobTrueAndArchiveFalseAndJobtitleContainingIgnoreCaseAndLocationjobContainingIgnoreCase(jobTitle, jobLocation, pageable);
 	                } else if (jobTitle != null) {
@@ -589,36 +383,47 @@ public class PostjobController {
 	                    applyJobsPage = pjd.findByApprovejobTrueAndArchiveFalse(pageable);
 	                }
 	            }
-	            
-	            List<Map<String, Object>> jobPostsWithStatus = applyJobsPage.getContent().stream().map(postJob -> {
-	                Map<String, Object> jobPostMap = new HashMap<>();
-	                jobPostMap.put("jobid", postJob.getJobid());
-	                jobPostMap.put("empName", postJob.getEmpName());
-	                jobPostMap.put("empEmail", postJob.getEmpEmail());
-	                jobPostMap.put("jobtitle", postJob.getJobtitle());
-	                jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
-	                jobPostMap.put("numberofopening", postJob.getNumberofopening());
-	                jobPostMap.put("locationjob", postJob.getLocationjob());
-	                jobPostMap.put("jobtype", postJob.getJobtype());
-	                jobPostMap.put("schedulejob", postJob.getSchedulejob());
-	                jobPostMap.put("payjob", postJob.getPayjob());
-	                jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
-	                jobPostMap.put("empid", postJob.getEmpid());
-	                jobPostMap.put("archive", postJob.isArchive());
-	                jobPostMap.put("approvejob", postJob.isApprovejob());
-	                jobPostMap.put("experience", postJob.getExperience());
 
-	                LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	                String formattedSendTime = sendTime.format(formatter);
-	                jobPostMap.put("sendTime", formattedSendTime);
+	            List<Map<String, Object>> jobPostsWithStatus = applyJobsPage.getContent().stream()
+	                    .filter(postJob -> !postJob.isArchive() && postJob.isApprovejob()) // Check for approved and not archived
+	                    .map(postJob -> {
+	                        if (uid != null) {
+	                            SavedJob savedJob = savedJobServiceimpl.findByJobidAndUid(postJob.getJobid(), uid);
+	                            boolean saveStatus = (savedJob != null) && savedJob.getSaveStatus();
+	                            if (!saveStatus) {
+	                                return null; // Skip this job post if saveStatus is false
+	                            }
+	                        }
 
-	                if (uid != null) {
-	                    jobPostMap.put("saveStatus", true);
-	                }
+	                        Map<String, Object> jobPostMap = new HashMap<>();
+	                        jobPostMap.put("jobid", postJob.getJobid());
+	                        jobPostMap.put("empName", postJob.getEmpName());
+	                        jobPostMap.put("empEmail", postJob.getEmpEmail());
+	                        jobPostMap.put("jobtitle", postJob.getJobtitle());
+	                        jobPostMap.put("companyforthisjob", postJob.getCompanyforthisjob());
+	                        jobPostMap.put("numberofopening", postJob.getNumberofopening());
+	                        jobPostMap.put("locationjob", postJob.getLocationjob());
+	                        jobPostMap.put("jobtype", postJob.getJobtype());
+	                        jobPostMap.put("schedulejob", postJob.getSchedulejob());
+	                        jobPostMap.put("payjob", postJob.getPayjob());
+	                        jobPostMap.put("descriptiondata", postJob.getDescriptiondata());
+	                        jobPostMap.put("empid", postJob.getEmpid());
+	                        jobPostMap.put("archive", postJob.isArchive());
+	                        jobPostMap.put("approvejob", postJob.isApprovejob());
+	                        jobPostMap.put("experience", postJob.getExperience());
 
-	                return jobPostMap;
-	            }).collect(Collectors.toList());
+	                        LocalDateTime sendTime = postJob.getSendTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	                        String formattedSendTime = sendTime.format(formatter);
+	                        jobPostMap.put("sendTime", formattedSendTime);
+
+	                        if (uid != null) {
+	                            jobPostMap.put("saveStatus", true);
+	                        }
+
+	                        return jobPostMap;
+	                    })
+	                    .collect(Collectors.toList());
 
 	            Map<String, Object> response = new HashMap<>();
 	            response.put("jobPosts", jobPostsWithStatus);
@@ -627,13 +432,12 @@ public class PostjobController {
 	            response.put("totalPages", applyJobsPage.getTotalPages());
 
 	            return ResponseEntity.ok(response);
-
-	  
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
 	    }
+
 	    
 	@CrossOrigin(origins = "${myapp.url}")
 	@GetMapping("/fetchJobPostById/{jobId}")

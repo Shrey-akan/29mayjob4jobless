@@ -5,6 +5,7 @@ package com.demo.oragejobsite.dao;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -80,6 +81,10 @@ public interface PostjobDao extends MongoRepository<PostJob, String>{
 
     @Query("{ 'approvejob': true, 'archive': false, 'locationjob': { $regex: ?0, $options: 'i' } }")
     Page<PostJob> findByApprovejobTrueAndArchiveFalseAndLocationjobContainingIgnoreCase(String locationjob, Pageable pageable);
+
+	Slice<PostJob> findByEmpidAndApprovejob(String empid, boolean b);
+
+	Slice<PostJob> findByApprovejob(boolean b);
 	
 }
 
