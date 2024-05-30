@@ -2,9 +2,11 @@ package com.demo.oragejobsite.controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.oragejobsite.dao.AdminDao;
@@ -150,9 +153,16 @@ public class AdminController {
     }
     @CrossOrigin(origins = "${myapp.url}")
     @GetMapping("/fetchadmin")
-    public ResponseEntity<List<Admin>> fetchadmin() {
+    public ResponseEntity<List<Admin>> fetchadmin(@RequestParam(required = false) String adminId) {
         try {
-            List<Admin> admindata = admindao.findAll();
+        	List<Admin> admindata = new ArrayList()<>(); ;
+        	if(adminId!=null && !adminId.isEmpty())
+        	{
+        		Optional<Admin> admin = admindao.findByAdminid(adminId);
+                admin.ifPresent(admindata::add);
+        	}else {
+                admindata = admindao.findAll();
+            }
             return ResponseEntity.status(HttpStatus.OK).body(admindata);
         } catch (Exception e) {
             e.printStackTrace();

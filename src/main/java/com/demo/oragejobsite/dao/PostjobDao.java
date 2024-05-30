@@ -9,6 +9,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.demo.oragejobsite.entity.Employer;
 import com.demo.oragejobsite.entity.PostJob;
 
 
@@ -24,7 +26,7 @@ public interface PostjobDao extends MongoRepository<PostJob, String>{
 	List<PostJob> findByArchiveTrue();
 
 //	List<PostJob> findByApprovejob(boolean b);
-	Page<PostJob> findByApprovejob(boolean b, Pageable pageable);
+
 
 //	List<PostJob> findByEmpidAndApprovejob(String empid, boolean b);
 	Page<PostJob> findByEmpidAndApprovejob(String empid, boolean b, Pageable pageable);
@@ -81,10 +83,13 @@ public interface PostjobDao extends MongoRepository<PostJob, String>{
 
     @Query("{ 'approvejob': true, 'archive': false, 'locationjob': { $regex: ?0, $options: 'i' } }")
     Page<PostJob> findByApprovejobTrueAndArchiveFalseAndLocationjobContainingIgnoreCase(String locationjob, Pageable pageable);
+    
+    @Query("{ $and: [ { 'empName': { $regex: ?0, $options: 'i' } }, { 'jobtitle': { $regex: ?1, $options: 'i' } } ] }")
+    Page<PostJob> findByEmpNameAndJobTitleIgnoreCase(String empName, String jobTitle, Pageable pageable);
 
-	Slice<PostJob> findByEmpidAndApprovejob(String empid, boolean b);
+	List<PostJob> findByEmpidAndApprovejob(String empid, boolean b);
 
-	Slice<PostJob> findByApprovejob(boolean b);
+	Slice<PostJob> findByApprovejob(boolean b, Pageable pageable);
 	
 }
 

@@ -100,6 +100,8 @@ public ResponseEntity<Object> insertEmployer(@RequestBody Employer emp) {
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request");
    }
 }
+
+
 @CrossOrigin(origins = "${myapp.url}")
 @GetMapping("/fetchemployerName")
 public ResponseEntity<List<Employer>> fetchemployerName(@RequestParam(required = false) String empid) {
@@ -123,41 +125,29 @@ public ResponseEntity<List<Employer>> fetchemployerName(@RequestParam(required =
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 }
-
-//@CrossOrigin(origins = "${myapp.url}")
-//@GetMapping("/fetchemployer")
-//public ResponseEntity<List<Employer>> fetchemployer(@RequestParam(required = false) String empid) {
-//    try {
-//        List<Employer> employers;
-//        if (empid != null) {
-//            // If UID is provided, fetch only the employer with the specified UID
-//            Optional<Employer> employer = ed.findByEmpid(empid);
-//            employers = new ArrayList<>();
-//            employer.ifPresent(employers::add);
-//        } else {
-//            // If UID is not provided, fetch all employers
-//            employers = ed.findAll();
-//        }
-//        if (employers.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        } else {
-//            return ResponseEntity.ok(employers);
-//        }
-//    } catch (Exception e) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//    }
-//}
 @CrossOrigin(origins = "${myapp.url}")
 @GetMapping("/fetchemployer")
 public ResponseEntity<?> fetchemployer(
 		@RequestParam(required = false) String empid,
 		@RequestParam(defaultValue = "0") int page,
-	    @RequestParam(defaultValue = "5") int size) {
+	    @RequestParam(defaultValue = "5") int size,
+	    @RequestParam(required = false) String name,
+	    @RequestParam(required = false) String companyName) {
     try {
     	Pageable pageable = PageRequest.of(page, size);
         Page<Employer> employee;
         
-        if (empid != null) {
+        if(name!=null && !name.isEmpty() && companyName!=null && !companyName.isEmpty()) {
+        	employee=ed.findByEmpNameAndCompanyName(name,companyName, pageable);
+        }
+        else if(name!=null && !name.isEmpty())
+        {
+        	employee=ed.findByEmpNameAndCompanyName(name,"", pageable);
+        }
+        else if(companyName!=null && !companyName.isEmpty()){
+        	employee=ed.findByEmpNameAndCompanyName("",companyName, pageable);
+        }
+        else if (empid != null) {
             // If UID is provided, fetch only the employer with the specified UID
             Optional<Employer> employer = ed.findByEmpid(empid);
             List<Employer> employerList = new ArrayList<>();

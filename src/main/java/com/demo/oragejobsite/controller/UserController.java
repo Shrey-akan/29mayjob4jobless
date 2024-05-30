@@ -134,19 +134,22 @@ public ResponseEntity<Object> insertusermail(@RequestBody User c1) {
 public ResponseEntity<?> fetchuser(
 		@RequestParam(required = false) String uid,
 		@RequestParam(defaultValue = "0") int page,
-	    @RequestParam(defaultValue = "5") int size) {
+	    @RequestParam(defaultValue = "5") int size,
+	    @RequestParam(required = false) String name) {
 	 try {
 	        Pageable pageable = PageRequest.of(page, size);
 	        Page<User> users;
-
-	        if (uid != null) {
-	            // If uid is provided, fetch only the user with the specified uid
+	        
+	        if(name!=null && !name.isEmpty()) {
+	        	users=ud.findByUserFirstNameOrUserLastNameRegexIgnoreCase(name, pageable);
+	        }
+	        else if (uid != null) {
+	        	
 	            Optional<User> optionalUser = ud.findByUid(uid);
 	            List<User> userList = new ArrayList<>();
 	            optionalUser.ifPresent(userList::add);
 	            users = new PageImpl<>(userList, pageable, userList.size());
 	        } else {
-	            // If uid is not provided, fetch all users with pagination
 	            users = ud.findAll(pageable);
 	        }
 

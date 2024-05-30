@@ -127,29 +127,29 @@ public class SubAdminDetController {
         return subAdminDetailsService.addSubAdmin(subAdminDetails);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAllSubAdmins() {
-        return subAdminDetailsService.getAllSubAdmins();
-    }
 //    @GetMapping("/all")
-//    public ResponseEntity<Object> getAllSubAdmins(@RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "2") int size) {
-//    	try {
-//            Pageable pageable = PageRequest.of(page, size);
-//            Page<SubAdminDetails> subAdminsPage = subAdminDetailsService.getAllSubAdmins(pageable);
-//            
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("content", subAdminsPage.getContent());
-//            response.put("totalItems", subAdminsPage.getTotalElements());
-//            response.put("currentPage", subAdminsPage.getNumber());
-//            response.put("totalPages", subAdminsPage.getTotalPages());
-//            
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
+//    public ResponseEntity<Object> getAllSubAdmins() {
+//        return subAdminDetailsService.getAllSubAdmins();
 //    }
+    @GetMapping("/all")
+    public ResponseEntity<Object> getAllSubAdmins(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+    	try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<SubAdminDetails> subAdminsPage = subAdminDetailsDao.findAll(pageable);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", subAdminsPage.getContent());
+            response.put("totalItems", subAdminsPage.getTotalElements());
+            response.put("currentPage", subAdminsPage.getNumber());
+            response.put("totalPages", subAdminsPage.getTotalPages());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getSubAdminById(@PathVariable String id) {
