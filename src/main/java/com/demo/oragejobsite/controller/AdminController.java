@@ -155,11 +155,12 @@ public class AdminController {
     @GetMapping("/fetchadmin")
     public ResponseEntity<List<Admin>> fetchadmin(@RequestParam(required = false) String adminId) {
         try {
-            List<Admin> admindata = new ArrayList<>();  // Corrected initialization
-            if (adminId != null && !adminId.isEmpty()) {
-                Optional<Admin> admin = admindao.findByAdminid(adminId);
-                admin.ifPresent(admindata::add);
-            } else {
+        	List<Admin> admindata = new ArrayList<>(); ;
+        	if(adminId!=null && !adminId.isEmpty())
+        	{
+        		Optional<Admin> admin = admindao.findByAdminid(adminId);
+                admin.ifPresent(admindata::add); 
+        	}else {
                 admindata = admindao.findAll();
             }
             return ResponseEntity.status(HttpStatus.OK).body(admindata);
@@ -168,5 +169,4 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
 }
