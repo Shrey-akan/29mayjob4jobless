@@ -34,9 +34,9 @@ public class ApplyJob {
 	private String jobid;
 	private String profileupdate;
 	 private Boolean userStatus;
-	    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date sendTime;
+     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
+   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+   private Date sendTime;
 
 	 private boolean notifydelete;
 	 
@@ -45,6 +45,8 @@ public class ApplyJob {
 	 
 	public ApplyJob() {
 		super();
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+        this.sendTime = calendar.getTime();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -77,7 +79,7 @@ public class ApplyJob {
 		this.jobid = jobid;
 		this.profileupdate = profileupdate;
 		this.userStatus = userStatus;
-		  this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
+		 this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
 
 		this.notifydelete = notifydelete;
 	}

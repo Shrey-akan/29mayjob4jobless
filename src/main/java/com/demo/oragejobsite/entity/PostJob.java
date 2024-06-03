@@ -39,12 +39,14 @@ private String experience;
 //@Field("sendTime")
 //@CreatedDate
 //private Date sendTime;
- @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date sendTime;
+@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
+@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+private Date sendTime;
 
 public PostJob() {
 	super();
+	 Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+     this.sendTime = calendar.getTime();
 	// TODO Auto-generated constructor stub
 }
 public PostJob(String jobid, String empName, String empEmail, String jobtitle, String companyforthisjob,
@@ -69,8 +71,7 @@ public PostJob(String jobid, String empName, String empEmail, String jobtitle, S
 	this.approvejob = approvejob;
 	this.experience = experience;
 	
- Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
-        this.sendTime = calendar.getTime();
+	 this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
 
 }
 public String getJobid() {
