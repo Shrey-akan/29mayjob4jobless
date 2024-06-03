@@ -5,6 +5,8 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.TimeZone;
+import java.util.Calendar;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -32,9 +34,10 @@ public class ApplyJob {
 	private String jobid;
 	private String profileupdate;
 	 private Boolean userStatus;
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
-	 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-	 private Date sendTime = new Date();
+	    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date sendTime;
+
 	 private boolean notifydelete;
 	 
 	 
@@ -74,7 +77,8 @@ public class ApplyJob {
 		this.jobid = jobid;
 		this.profileupdate = profileupdate;
 		this.userStatus = userStatus;
-		this.sendTime = sendTime;
+		  this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
+
 		this.notifydelete = notifydelete;
 	}
 

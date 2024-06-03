@@ -89,7 +89,7 @@ public interface PostjobDao extends MongoRepository<PostJob, String>{
 
 	List<PostJob> findByEmpidAndApprovejob(String empid, boolean b);
 
-	Slice<PostJob> findByApprovejob(boolean b, Pageable pageable);
+	Page<PostJob> findByApprovejob(boolean b, Pageable pageable);
 	Page<PostJob> findByJobtitleContainingIgnoreCaseAndCompanyforthisjobContainingIgnoreCase(String title,
 			String company,Pageable pageable);
 }

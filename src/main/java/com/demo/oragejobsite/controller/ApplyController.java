@@ -413,4 +413,75 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
 	    }
 	}
 
+
+
+
+
+
+
+  @CrossOrigin(origins = "${myapp.url}")
+    @GetMapping("/notificationforuserApp")
+    public ResponseEntity<?> notificationforuserApp(
+            @RequestParam(required = false) String uid,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size); // Create pageable object
+            Page<ApplyJob> applyJobsPage;
+	
+            if (uid != null && !uid.isEmpty()) {
+	
+                applyJobsPage = apd.findByUid(uid, pageable); // Fetch paginated results for the specific user
+                List<UserStatus> userStatusList = userstatdao.findByUid(uid);
+ 
+                Iterator<ApplyJob> iterator = applyJobsPage.iterator();
+ 
+                while (iterator.hasNext()) {
+	
+                    ApplyJob applyJob = iterator.next();
+                    
+                    boolean foundMatchingUserStatus = false;
+                    for (UserStatus userStatus : userStatusList) {
+                        if (uid.equals(userStatus.getUid()) &&
+                                applyJob.getUid().equals(userStatus.getUid()) &&
+                                applyJob.getJuid().equals(userStatus.getJuid()) &&
+                                userStatus.getViewcheck() != null &&
+                                userStatus.getViewcheck()) {
+ 
+                            applyJob.setUserStatus(true);
+                            foundMatchingUserStatus = true;
+                            break;
+                        }
+                    }
+ 
+                    if (!foundMatchingUserStatus) {
+                        applyJob.setUserStatus(false);
+                    }
+ 
+                    if (applyJob.isNotifydelete()) {	
+                        iterator.remove(); // Safely remove the element using iterator
+                    }
+                }
+            } else {
+                applyJobsPage = apd.findAll(pageable); // Fetch paginated results for all users
+            }
+ 
+            // Return paginated response with currentPage, totalPages, totalElements, and content
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", applyJobsPage.getContent());
+            response.put("currentPage", applyJobsPage.getNumber());
+            response.put("totalPages", applyJobsPage.getTotalPages());
+            response.put("totalElements", applyJobsPage.getTotalElements());
+ 
+            return ResponseEntity.ok(response);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Database error occurred: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while processing your request: " + e.getMessage());
+        }
+    }
 }

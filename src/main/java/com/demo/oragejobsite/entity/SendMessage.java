@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 
 
@@ -22,11 +24,15 @@ public class SendMessage {
     private String isSender;
 //    @CreatedDate
 //    private Date sendTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+      @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date sendTime = new Date();
+    private Date sendTime;
+
 	public SendMessage() {
 		super();
+ Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+        this.sendTime = calendar.getTime();
+
 		// TODO Auto-generated constructor stub
 	}
 
@@ -38,7 +44,7 @@ public class SendMessage {
 		this.messageFrom = messageFrom;
 		this.message = message;
 		this.isSender = isSender;
-		this.sendTime = sendTime;
+	 this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
 	}
 
 	public String getMessageId() {

@@ -2,6 +2,8 @@ package com.demo.oragejobsite.entity;
 
 import java.util.Date;
 
+import java.util.Calendar;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+	
 
 @Document(collection = "postjob")
 public class PostJob {
@@ -33,9 +39,10 @@ private String experience;
 //@Field("sendTime")
 //@CreatedDate
 //private Date sendTime;
-@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
-@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-private Date sendTime = new Date();
+ @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date sendTime;
+
 public PostJob() {
 	super();
 	// TODO Auto-generated constructor stub
@@ -61,7 +68,10 @@ public PostJob(String jobid, String empName, String empEmail, String jobtitle, S
 	this.archive = archive;
 	this.approvejob = approvejob;
 	this.experience = experience;
-	this.sendTime = sendTime;
+	
+ Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+        this.sendTime = calendar.getTime();
+
 }
 public String getJobid() {
 	return jobid;
