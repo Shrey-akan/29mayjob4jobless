@@ -134,7 +134,7 @@ public ResponseEntity<Object> insertusermail(@RequestBody User c1) {
 public ResponseEntity<?> fetchuser(
 		@RequestParam(required = false) String uid,
 		@RequestParam(defaultValue = "0") int page,
-	    @RequestParam(defaultValue = "5") int size,
+	    @RequestParam(defaultValue = "10") int size,
 	    @RequestParam(required = false) String name) {
 	 try {
 	        Pageable pageable = PageRequest.of(page, size);

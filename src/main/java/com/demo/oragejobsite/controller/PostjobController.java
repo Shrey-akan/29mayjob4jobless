@@ -180,7 +180,7 @@ public class PostjobController {
 	  	        @RequestParam(required = false) String searchLocation,
 	  	        @RequestParam(required = false) String searchCompany) {
 	  	    try {
-	  	        int pageSize = (empid != null && !empid.isEmpty()) ? 5 : 5;
+	  	        int pageSize = (empid != null && !empid.isEmpty()) ? 10 : 10;
 	  	        Pageable pageable = PageRequest.of(page, pageSize);
 	  	        String jobTitleRegex = searchJobTitle != null ? ".*" + Pattern.quote(searchJobTitle.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
 	  	        String locationRegex = searchLocation != null ? ".*" + Pattern.quote(searchLocation.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
@@ -262,7 +262,7 @@ public class PostjobController {
 		  public ResponseEntity<?> fetchjobpostadmin(
 				  	@RequestParam(required = false) String empid,
 			        @RequestParam(defaultValue = "0") int page,
-			        @RequestParam(defaultValue = "5") int size,
+			        @RequestParam(defaultValue = "10") int size,
 			        @RequestParam(required = false) String empName,
 			        @RequestParam(required = false) String jobTitle) {
 		      try {
@@ -340,7 +340,7 @@ public class PostjobController {
 	          @RequestParam(defaultValue = "0") int page,
 	          @RequestParam(required = false) String searchJobTitle) {
 	      try {
-	    	  int pageSize = (empid!=null && !empid.isEmpty())?2:5; 
+	    	  int pageSize = (empid!=null && !empid.isEmpty())?10:10; 
 	          Pageable pageable = PageRequest.of(page, pageSize);
 	          Page<PostJob> jobPage;
 	          String jobTitleRegex =searchJobTitle != null ? ".*" + Pattern.quote(searchJobTitle.toLowerCase(Locale.ENGLISH)) + ".*" : ".*";
@@ -466,12 +466,12 @@ public class PostjobController {
 //	        }
 //	    }
 
-	    
+
 	    @GetMapping("/fetchjobpoststatus")
 	    public ResponseEntity<Map<String, Object>> fetchjobpoststatus(
 	            @RequestParam(required = false) String uid,
 	            @RequestParam(defaultValue = "0") int page,
-	            @RequestParam(defaultValue = "5") int size,
+	            @RequestParam(defaultValue = "10") int size,
 	            @RequestParam(required = false) String searchJobTitle,
 	            @RequestParam(required = false) String searchLocation) {
 	        try {
@@ -644,7 +644,7 @@ public class PostjobController {
 	    public ResponseEntity<Map<String, Object>> fetchjobpoststatuscheck(
 	        @RequestParam(required = false) String uid,
 	        @RequestParam(defaultValue = "0") int page,
-	        @RequestParam(defaultValue = "5") int size,
+	        @RequestParam(defaultValue = "10") int size,
 	        @RequestParam(required = false) String jobTitle,
 	        @RequestParam(required = false) String jobLocation) {
 	        try {
@@ -903,7 +903,7 @@ public class PostjobController {
 	@GetMapping("/fetchJobByTitle")
 	public ResponseEntity<?> fetchJobs(@RequestParam(required = false) String title, 
 			@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") int size,
 			@RequestParam(required = false) String company) {
 	    try {
 	    	Pageable pageable = PageRequest.of(page, size);

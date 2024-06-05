@@ -95,7 +95,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
             @RequestParam(required = false) String uid,
             @RequestParam(required = false) String empid,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String jobTitle,
             @RequestParam(required = false) String jobStatus) {
         
@@ -424,7 +424,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
     public ResponseEntity<?> notificationforuserApp(
             @RequestParam(required = false) String uid,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size); // Create pageable object
             Page<ApplyJob> applyJobsPage;
