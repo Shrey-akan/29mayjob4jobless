@@ -173,10 +173,17 @@ public void setExperience(String experience) {
 public Date getSendTime() {
 	return sendTime;
 }
-public void setSendTime(Date sendTime) {
-	this.sendTime = sendTime;
-}
+//public void setSendTime(Date sendTime) {
+//	this.sendTime = sendTime;
+//}
 
+public void setSendTime(Date sendTime) {
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+    if (sendTime != null) {
+        calendar.setTime(sendTime);
+    }
+    this.sendTime = calendar.getTime();
+}
 
 
 }
