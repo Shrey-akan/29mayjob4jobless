@@ -1,5 +1,6 @@
 package com.demo.oragejobsite.controller;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.lang.reflect.Field;
@@ -12,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -813,7 +815,14 @@ public class PostjobController {
 
 	                // If the value is not null, update the corresponding field in the existingJob object
 	                if (value != null) {
-	                    field.set(existingJob, value);
+//	                    field.set(existingJob, value);
+	                	 if (field.getName().equals("sendTime")) {
+	                         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+	                         calendar.setTime((Date) value);
+	                         field.set(existingJob, calendar.getTime());
+	                     } else {
+	                         field.set(existingJob, value);
+	                     }
 	                }
 	            }
 
