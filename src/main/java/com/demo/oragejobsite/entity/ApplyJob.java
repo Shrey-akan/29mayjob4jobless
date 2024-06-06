@@ -1,4 +1,4 @@
-package com.demo.oragejobsite.entity;
+	package com.demo.oragejobsite.entity;
 
 import java.util.Date;
 

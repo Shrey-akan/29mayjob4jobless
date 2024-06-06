@@ -788,6 +788,59 @@ public class PostjobController {
 	
 	
 	 
+//	@CrossOrigin(origins = "${myapp.url}")
+//	@PutMapping("/jobpostupdate/{jobid}")
+//	public ResponseEntity<Object> jobpostupdate(@PathVariable String jobid, @RequestBody PostJob updatedJob) {
+//	    try {
+//	        Optional<PostJob> existingJobOptional = pjd.findById(jobid);
+//	        if (existingJobOptional.isPresent()) {
+//	            PostJob existingJob = existingJobOptional.get();
+//
+//	            boolean currentApprovalStatus = existingJob.isApprovejob();
+//
+//	            // Update the approvejob field based on its current value
+//	            existingJob.setApprovejob(!currentApprovalStatus);
+//
+//	            // Get all fields of the PostJob class
+//	            Field[] fields = PostJob.class.getDeclaredFields();
+//	            for (Field field : fields) {
+//	                // Set field accessible to allow modification
+//	            	if (field.getName().equals("approvejob")) {
+//	                    continue;
+//	                }
+//	                field.setAccessible(true);
+//
+//	                // Get the value of the field from the updatedJob object
+//	                Object value = field.get(updatedJob);
+//
+//	                // If the value is not null, update the corresponding field in the existingJob object
+//	                if (value != null) {
+////	                    field.set(existingJob, value);
+//	                	 if (field.getName().equals("sendTime")) {
+//	                         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+//	                         calendar.setTime((Date) value);
+//	                         field.set(existingJob, calendar.getTime());
+//	                     } else {
+//	                         field.set(existingJob, value);
+//	                     }
+//	                }
+//	            }
+//
+//	            pjd.save(existingJob);
+//	            return ResponseEntity.status(HttpStatus.OK).body(existingJob);
+//	        } else {
+//	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+//	        }
+//	    } catch (DataAccessException e) {
+//	        e.printStackTrace();
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error occurred: " + e.getMessage());
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request: " + e.getMessage());
+//	    }
+//	}
+	
+	
 	@CrossOrigin(origins = "${myapp.url}")
 	@PutMapping("/jobpostupdate/{jobid}")
 	public ResponseEntity<Object> jobpostupdate(@PathVariable String jobid, @RequestBody PostJob updatedJob) {
@@ -805,7 +858,7 @@ public class PostjobController {
 	            Field[] fields = PostJob.class.getDeclaredFields();
 	            for (Field field : fields) {
 	                // Set field accessible to allow modification
-	            	if (field.getName().equals("approvejob")) {
+	                if (field.getName().equals("approvejob")) {
 	                    continue;
 	                }
 	                field.setAccessible(true);
@@ -815,14 +868,14 @@ public class PostjobController {
 
 	                // If the value is not null, update the corresponding field in the existingJob object
 	                if (value != null) {
-//	                    field.set(existingJob, value);
-	                	 if (field.getName().equals("sendTime")) {
-	                         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
-	                         calendar.setTime((Date) value);
-	                         field.set(existingJob, calendar.getTime());
-	                     } else {
-	                         field.set(existingJob, value);
-	                     }
+	                    if (field.getName().equals("sendTime")) {
+	                        // Convert the sendTime to the desired timezone
+	                        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+	                        calendar.setTime((Date) value);
+	                        existingJob.setSendTime(calendar.getTime());
+	                    } else {
+	                        field.set(existingJob, value);
+	                    }
 	                }
 	            }
 
@@ -839,6 +892,10 @@ public class PostjobController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request: " + e.getMessage());
 	    }
 	}
+
+	
+	
+	
 
 @CrossOrigin(origins = "${myapp.url}")
     @PutMapping("/jobpostupdatedis/{jobid}")
