@@ -545,7 +545,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
  
             // Return paginated response with currentPage, totalPages, totalElements, and content
             Map<String, Object> response = new HashMap<>();
-            response.put("content", applyJobsPage.getContent());
+            response.put("jobPosts", applyJobsPage.getContent());
             response.put("currentPage", applyJobsPage.getNumber());
             response.put("totalPages", applyJobsPage.getTotalPages());
             response.put("totalElements", applyJobsPage.getTotalElements());
