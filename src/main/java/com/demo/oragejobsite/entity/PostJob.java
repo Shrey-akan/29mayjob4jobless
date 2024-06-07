@@ -71,7 +71,12 @@ public PostJob(String jobid, String empName, String empEmail, String jobtitle, S
 	this.approvejob = approvejob;
 	this.experience = experience;
 	
-	 this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
+//	 this.sendTime = sendTime != null ? sendTime : Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata")).getTime();
+	   Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
+       if (sendTime != null) {
+           calendar.setTime(sendTime);
+       }
+       this.sendTime = calendar.getTime();
 
 }
 public String getJobid() {
