@@ -548,7 +548,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
             response.put("jobPosts", applyJobsPage.getContent());
             response.put("currentPage", applyJobsPage.getNumber());
             response.put("totalPages", applyJobsPage.getTotalPages());
-            response.put("totalElements", applyJobsPage.getTotalElements());
+            response.put("totalItems", applyJobsPage.getTotalElements());
  
             return ResponseEntity.ok(response);
         } catch (DataAccessException e) {
