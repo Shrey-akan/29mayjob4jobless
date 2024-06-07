@@ -366,7 +366,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
             Page<ApplyJob> uniqueApplyJobPage = new PageImpl<>(uniqueApplyJobs, pageable, applyJobsPage.getTotalElements());
 	        
 	        Map<String, Object> response = new HashMap<>();
-            response.put("content", uniqueApplyJobPage.getContent());
+            response.put("jobPosts", uniqueApplyJobPage.getContent());
             response.put("currentPage", uniqueApplyJobPage.getNumber());
             response.put("totalPages", uniqueApplyJobPage.getTotalPages());
             response.put("totalItems", uniqueApplyJobPage.getTotalElements());
@@ -435,7 +435,7 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
             Page<ApplyJob> uniqueApplyJobPage = new PageImpl<>(uniqueApplyJobs, pageable, applyJobPage.getTotalElements());
  
             Map<String, Object> response = new HashMap<>();
-            response.put("content", uniqueApplyJobPage.getContent());
+            response.put("jobPosts", uniqueApplyJobPage.getContent());
             response.put("currentPage", uniqueApplyJobPage.getNumber());
             response.put("totalPages", uniqueApplyJobPage.getTotalPages());
             response.put("totalItems", uniqueApplyJobPage.getTotalElements());
