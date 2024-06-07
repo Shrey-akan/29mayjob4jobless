@@ -25,6 +25,7 @@ import com.demo.oragejobsite.entity.ApplyJob;
 import com.demo.oragejobsite.entity.UserStatus;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -310,66 +311,142 @@ ApplicantsCount applicantsCount = getApplicantsCountByJobId(jobid);
 	    }
 	}
 	
+//	@GetMapping("/fetchUniqueApplyJobByUid")
+//    public ResponseEntity<?> fetchUniqueApplyJobByUid(@RequestParam String uid) {
+//        try {
+//            // Fetch ApplyJob entities by uid
+//            List<ApplyJob> applyJobs = apd.findByUid(uid);
+//
+//
+//            // Extract unique ApplyJob objects based on jucompny
+//            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobs.stream()
+//                    .collect(Collectors.toMap(
+//                            ApplyJob::getJucompny,
+//                            applyJob -> applyJob,
+//                            (existing, replacement) -> existing
+//                    ));
+//
+//
+//            List<ApplyJob> uniqueApplyJobs = uniqueApplyJobsMap.values().stream().collect(Collectors.toList());
+//
+//
+//            return ResponseEntity.ok(uniqueApplyJobs);
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Database error occurred: " + e.getMessage());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("An error occurred while processing your request: " + e.getMessage());
+//        }
+//    }
+	
+	
+	
 	@GetMapping("/fetchUniqueApplyJobByUid")
-    public ResponseEntity<?> fetchUniqueApplyJobByUid(@RequestParam String uid) {
-        try {
-            // Fetch ApplyJob entities by uid
-            List<ApplyJob> applyJobs = apd.findByUid(uid);
-
-
-            // Extract unique ApplyJob objects based on jucompny
-            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobs.stream()
+	public ResponseEntity<?> fetchUniqueApplyJobByUid(
+	        @RequestParam String uid,
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "5") int size) {
+	    try {
+	        Pageable pageable = PageRequest.of(page, size);
+ 
+            Page<ApplyJob> applyJobsPage = apd.findByUid(uid, pageable);
+            
+            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobsPage.getContent().stream()
                     .collect(Collectors.toMap(
                             ApplyJob::getJucompny,
                             applyJob -> applyJob,
                             (existing, replacement) -> existing
                     ));
-
-
-            List<ApplyJob> uniqueApplyJobs = uniqueApplyJobsMap.values().stream().collect(Collectors.toList());
-
-
-            return ResponseEntity.ok(uniqueApplyJobs);
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Database error occurred: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while processing your request: " + e.getMessage());
-        }
-    }
+	        
+	        List<ApplyJob> uniqueApplyJobs = uniqueApplyJobsMap.values().stream().collect(Collectors.toList());
+ 
+            Page<ApplyJob> uniqueApplyJobPage = new PageImpl<>(uniqueApplyJobs, pageable, applyJobsPage.getTotalElements());
+	        
+	        Map<String, Object> response = new HashMap<>();
+            response.put("content", uniqueApplyJobPage.getContent());
+            response.put("currentPage", uniqueApplyJobPage.getNumber());
+            response.put("totalPages", uniqueApplyJobPage.getTotalPages());
+            response.put("totalItems", uniqueApplyJobPage.getTotalElements());
+ 
+	        return ResponseEntity.ok(response);
+	    } catch (DataAccessException e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Database error occurred: " + e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("An error occurred while processing your request: " + e.getMessage());
+	    }
+	}
+//	@GetMapping("/fetchUniqueJunamesByEmpid")
+//    public ResponseEntity<?> fetchUniqueJunamesByEmpid(@RequestParam String empid) {
+//        try {
+//            // Fetch ApplyJob entities by empid
+//            List<ApplyJob> applyJobs = apd.findByEmpid(empid);
+//
+//
+//            // Extract unique ApplyJob objects based on juname
+//            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobs.stream()
+//                    .collect(Collectors.toMap(
+//                            ApplyJob::getJuname,
+//                            applyJob -> applyJob,
+//                            (existing, replacement) -> existing
+//                    ));
+//
+//
+//            List<ApplyJob> uniqueApplyJobs = uniqueApplyJobsMap.values().stream().collect(Collectors.toList());
+//
+//
+//            return ResponseEntity.ok(uniqueApplyJobs);
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Database error occurred: " + e.getMessage());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("An error occurred while processing your request: " + e.getMessage());
+//        }
+//    }
+	
 	@GetMapping("/fetchUniqueJunamesByEmpid")
-    public ResponseEntity<?> fetchUniqueJunamesByEmpid(@RequestParam String empid) {
+    public ResponseEntity<?> fetchUniqueJunamesByEmpid(
+            @RequestParam String empid,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            // Fetch ApplyJob entities by empid
-            List<ApplyJob> applyJobs = apd.findByEmpid(empid);
-
-
-            // Extract unique ApplyJob objects based on juname
-            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobs.stream()
+            Pageable pageable = PageRequest.of(page, size);
+ 
+            Page<ApplyJob> applyJobPage = apd.findByEmpid(empid, pageable);
+ 
+            Map<String, ApplyJob> uniqueApplyJobsMap = applyJobPage.getContent().stream()
                     .collect(Collectors.toMap(
                             ApplyJob::getJuname,
                             applyJob -> applyJob,
                             (existing, replacement) -> existing
                     ));
-
-
+ 
             List<ApplyJob> uniqueApplyJobs = uniqueApplyJobsMap.values().stream().collect(Collectors.toList());
-
-
-            return ResponseEntity.ok(uniqueApplyJobs);
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Database error occurred: " + e.getMessage());
+ 
+            Page<ApplyJob> uniqueApplyJobPage = new PageImpl<>(uniqueApplyJobs, pageable, applyJobPage.getTotalElements());
+ 
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", uniqueApplyJobPage.getContent());
+            response.put("currentPage", uniqueApplyJobPage.getNumber());
+            response.put("totalPages", uniqueApplyJobPage.getTotalPages());
+            response.put("totalItems", uniqueApplyJobPage.getTotalElements());
+ 
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while processing your request: " + e.getMessage());
         }
-    }
+	}
 //	@GetMapping("/check-application")
 //    public ResponseEntity<?> checkIfApplied(@RequestParam String jobid, @RequestParam String uid) {
 //        try {
