@@ -2,6 +2,8 @@ package com.demo.oragejobsite.dao;
 
 
 
+import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +12,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-
+import com.demo.oragejobsite.entity.Follow;
 import com.demo.oragejobsite.entity.PostJob;
 
 
@@ -92,5 +94,12 @@ public interface PostjobDao extends MongoRepository<PostJob, String>{
 	Page<PostJob> findByApprovejob(boolean b, Pageable pageable);
 	Page<PostJob> findByJobtitleContainingIgnoreCaseAndCompanyforthisjobContainingIgnoreCase(String title,
 			String company,Pageable pageable);
+	
+	 long countByEmpidAndApprovejobTrue(String empid);
+	 
+	 @Query("{ 'empid': ?0, 'approvejob': true, 'sendTime': { $gt: ?1 } }")
+	    long countByEmpidAndApprovejobTrueAndSendTimeAfter(String empid, Date sendTime);
+
+	  List<PostJob> findByEmpidAndApprovejobTrue(String empid);
 }
 
